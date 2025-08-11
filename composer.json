@@ -1,0 +1,30 @@
+{
+    "name": "ablancodev/simple-llm-php",
+    "description": "Una librería PHP simple para interactuar con ChatGPT, Claude y Gemini",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Antonio Blanco",
+            "email": "antonio@blancoleon.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "guzzlehttp/guzzle": "^7.0",
+        "vlucas/phpdotenv": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SimpleLLM\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SimpleLLM\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    }
+}
