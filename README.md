@@ -2,6 +2,15 @@
 
 A simple PHP library to interact with major LLM providers: OpenAI (ChatGPT), Anthropic (Claude), and Google (Gemini).
 
+## Features
+
+- ✅ Simple and clean API
+- ✅ Support for multiple LLM providers
+- ✅ Easy model switching
+- ✅ Secure API key management
+- ✅ Production-ready with multiple configuration options
+- ✅ Zero dependencies besides HTTP client
+
 ## Installation
 
 ```bash
@@ -9,6 +18,10 @@ composer require ablancodev/simple-llm-php
 ```
 
 ## Configuration
+
+The library offers three ways to configure API keys:
+
+### Option 1: Using .env file (Development)
 
 1. Copy the `.env.example` file to `.env`:
 ```bash
@@ -30,7 +43,19 @@ GEMINI_API_KEY=your-gemini-api-key-here
 GEMINI_MODEL=gemini-1.5-flash
 ```
 
+⚠️ **SECURITY WARNING**: Never commit `.env` files to version control or upload them to public directories.
+
+### Option 2: Environment Variables (Production)
+
+Configure your API keys as environment variables in your server (Apache, Nginx, etc.) and access them using `getenv()`.
+
+### Option 3: Direct Configuration
+
+Pass API keys directly when initializing providers (useful for dynamic configurations).
+
 ## Basic Usage
+
+### Option 1: Using .env file (Development)
 
 ```php
 <?php
@@ -43,16 +68,45 @@ $llm = new LLMClient();
 // Use OpenAI
 $response = $llm->useProvider('openai')
                ->chat('Hello, how are you?');
+```
 
-// Use Claude
-$response = $llm->useProvider('anthropic')
-               ->chat('Explain what PHP is');
+### Option 2: Manual configuration (Production)
 
-// Use Gemini
-$response = $llm->useProvider('gemini')
-               ->chat('What is the capital of Spain?');
+```php
+<?php
+require_once 'vendor/autoload.php';
 
-// Change model dynamically
+use SimpleLLM\LLMClient;
+
+// Pass configuration directly in the constructor
+$llm = new LLMClient(null, [
+    'api_keys' => [
+        'openai' => getenv('OPENAI_API_KEY'),
+        'anthropic' => getenv('ANTHROPIC_API_KEY'),
+        'gemini' => getenv('GEMINI_API_KEY')
+    ],
+    'models' => [
+        'openai' => 'gpt-4o-mini',
+        'anthropic' => 'claude-3-5-sonnet-20241022',
+        'gemini' => 'gemini-1.5-flash'
+    ]
+]);
+
+$response = $llm->useProvider('openai')->chat('Hello!');
+```
+
+### Option 3: Pass API key directly
+
+```php
+// Pass API key directly when using a provider
+$llm = new LLMClient();
+$response = $llm->useProvider('openai', 'gpt-4o', 'your-api-key-here')
+               ->chat('Hello, how are you?');
+```
+
+### Changing models dynamically
+
+```php
 $llm->useProvider('openai')
     ->setModel('gpt-4o')
     ->chat('Complex question');
@@ -78,8 +132,57 @@ $llm->useProvider('openai')
 
 ## Complete Example
 
-Check `examples/basic_usage.php` for a complete usage example.
+```php
+<?php
+require_once 'vendor/autoload.php';
+
+use SimpleLLM\LLMClient;
+use SimpleLLM\Exceptions\LLMException;
+
+try {
+    // Initialize client
+    $llm = new LLMClient();
+    
+    // Chat with different providers
+    $openAIResponse = $llm->useProvider('openai')->chat('What is PHP?');
+    $claudeResponse = $llm->useProvider('anthropic')->chat('Explain Laravel');
+    $geminiResponse = $llm->useProvider('gemini')->chat('Best PHP practices');
+    
+    // Change model on the fly
+    $llm->useProvider('openai')
+        ->setModel('gpt-4o')
+        ->chat('Write a complex algorithm');
+        
+} catch (LLMException $e) {
+    echo "Error: " . $e->getMessage();
+}
+```
+
+Check `examples/basic_usage.php` for more examples.
+
+## Error Handling
+
+The library throws `LLMException` for all errors. Always wrap your calls in try-catch blocks:
+
+```php
+try {
+    $response = $llm->useProvider('openai')->chat('Hello');
+} catch (LLMException $e) {
+    // Handle API errors, missing keys, etc.
+    echo "Error: " . $e->getMessage();
+}
+```
+
+## Requirements
+
+- PHP >= 7.4
+- Composer
+- API keys for the providers you want to use
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-MIT
+MIT License - see LICENSE file for details.

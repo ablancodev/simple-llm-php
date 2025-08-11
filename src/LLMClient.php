@@ -16,30 +16,37 @@ class LLMClient
     const PROVIDER_GEMINI = 'gemini';
 
     private AbstractProvider $provider;
+    private array $apiKeys = [];
+    private array $models = [];
 
-    public function __construct(?string $envPath = null)
+    public function __construct(?string $envPath = null, ?array $config = null)
     {
+        if ($config) {
+            $this->apiKeys = $config['api_keys'] ?? [];
+            $this->models = $config['models'] ?? [];
+        }
+        
         $this->loadEnvironment($envPath);
     }
 
-    public function useProvider(string $providerName, ?string $model = null): self
+    public function useProvider(string $providerName, ?string $model = null, ?string $apiKey = null): self
     {
         switch (strtolower($providerName)) {
             case self::PROVIDER_OPENAI:
-                $apiKey = $_ENV['OPENAI_API_KEY'] ?? null;
-                $defaultModel = $_ENV['OPENAI_MODEL'] ?? 'gpt-4o-mini';
+                $apiKey = $apiKey ?? $this->apiKeys['openai'] ?? $_ENV['OPENAI_API_KEY'] ?? null;
+                $defaultModel = $this->models['openai'] ?? $_ENV['OPENAI_MODEL'] ?? 'gpt-4o-mini';
                 $this->provider = new OpenAIProvider($apiKey, $model ?? $defaultModel);
                 break;
 
             case self::PROVIDER_ANTHROPIC:
-                $apiKey = $_ENV['ANTHROPIC_API_KEY'] ?? null;
-                $defaultModel = $_ENV['ANTHROPIC_MODEL'] ?? 'claude-3-5-sonnet-20241022';
+                $apiKey = $apiKey ?? $this->apiKeys['anthropic'] ?? $_ENV['ANTHROPIC_API_KEY'] ?? null;
+                $defaultModel = $this->models['anthropic'] ?? $_ENV['ANTHROPIC_MODEL'] ?? 'claude-3-5-sonnet-20241022';
                 $this->provider = new AnthropicProvider($apiKey, $model ?? $defaultModel);
                 break;
 
             case self::PROVIDER_GEMINI:
-                $apiKey = $_ENV['GEMINI_API_KEY'] ?? null;
-                $defaultModel = $_ENV['GEMINI_MODEL'] ?? 'gemini-1.5-flash';
+                $apiKey = $apiKey ?? $this->apiKeys['gemini'] ?? $_ENV['GEMINI_API_KEY'] ?? null;
+                $defaultModel = $this->models['gemini'] ?? $_ENV['GEMINI_MODEL'] ?? 'gemini-1.5-flash';
                 $this->provider = new GeminiProvider($apiKey, $model ?? $defaultModel);
                 break;
 
