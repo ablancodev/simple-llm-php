@@ -1,6 +1,6 @@
 # Simple LLM PHP Client
 
-A simple PHP library to interact with major LLM providers: OpenAI (ChatGPT), Anthropic (Claude), and Google (Gemini).
+A simple PHP library to interact with major LLM providers: OpenAI (ChatGPT), Anthropic (Claude), Google (Gemini), and xAI (Grok).
 
 ## Features
 
@@ -41,6 +41,10 @@ ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
 # Google Gemini
 GEMINI_API_KEY=your-gemini-api-key-here
 GEMINI_MODEL=gemini-1.5-flash
+
+# xAI/Grok
+XAI_API_KEY=your-xai-api-key-here
+XAI_MODEL=grok-beta
 ```
 
 ⚠️ **SECURITY WARNING**: Never commit `.env` files to version control or upload them to public directories.
@@ -83,12 +87,14 @@ $llm = new LLMClient(null, [
     'api_keys' => [
         'openai' => getenv('OPENAI_API_KEY'),
         'anthropic' => getenv('ANTHROPIC_API_KEY'),
-        'gemini' => getenv('GEMINI_API_KEY')
+        'gemini' => getenv('GEMINI_API_KEY'),
+        'xai' => getenv('XAI_API_KEY')
     ],
     'models' => [
         'openai' => 'gpt-4o-mini',
         'anthropic' => 'claude-3-5-sonnet-20241022',
-        'gemini' => 'gemini-1.5-flash'
+        'gemini' => 'gemini-1.5-flash',
+        'xai' => 'grok-beta'
     ]
 ]);
 
@@ -129,6 +135,9 @@ $llm->useProvider('openai')
 - `gemini-1.5-pro`
 - `gemini-1.5-flash`
 - `gemini-1.0-pro`
+
+### xAI/Grok
+- `grok-beta`
 
 ## Complete Example
 

@@ -7,6 +7,7 @@ use SimpleLLM\Providers\AbstractProvider;
 use SimpleLLM\Providers\OpenAIProvider;
 use SimpleLLM\Providers\AnthropicProvider;
 use SimpleLLM\Providers\GeminiProvider;
+use SimpleLLM\Providers\XAIProvider;
 use SimpleLLM\Exceptions\LLMException;
 
 class LLMClient
@@ -14,6 +15,7 @@ class LLMClient
     const PROVIDER_OPENAI = 'openai';
     const PROVIDER_ANTHROPIC = 'anthropic';
     const PROVIDER_GEMINI = 'gemini';
+    const PROVIDER_XAI = 'xai';
 
     private AbstractProvider $provider;
     private array $apiKeys = [];
@@ -48,6 +50,12 @@ class LLMClient
                 $apiKey = $apiKey ?? $this->apiKeys['gemini'] ?? $_ENV['GEMINI_API_KEY'] ?? null;
                 $defaultModel = $this->models['gemini'] ?? $_ENV['GEMINI_MODEL'] ?? 'gemini-1.5-flash';
                 $this->provider = new GeminiProvider($apiKey, $model ?? $defaultModel);
+                break;
+
+            case self::PROVIDER_XAI:
+                $apiKey = $apiKey ?? $this->apiKeys['xai'] ?? $_ENV['XAI_API_KEY'] ?? null;
+                $defaultModel = $this->models['xai'] ?? $_ENV['XAI_MODEL'] ?? 'grok-beta';
+                $this->provider = new XAIProvider($apiKey, $model ?? $defaultModel);
                 break;
 
             default:
@@ -104,7 +112,8 @@ class LLMClient
         return [
             self::PROVIDER_OPENAI => 'OpenAI (ChatGPT)',
             self::PROVIDER_ANTHROPIC => 'Anthropic (Claude)',
-            self::PROVIDER_GEMINI => 'Google (Gemini)'
+            self::PROVIDER_GEMINI => 'Google (Gemini)',
+            self::PROVIDER_XAI => 'xAI (Grok)'
         ];
     }
 }
